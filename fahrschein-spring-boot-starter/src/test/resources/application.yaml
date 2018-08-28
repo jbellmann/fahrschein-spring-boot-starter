@@ -1,0 +1,25 @@
+fahrschein:
+  clients:
+    first:
+      access-token-id: myAccessTokenId
+      request-config:
+        connect-timeout: 150 milliseconds
+      client-config:
+        connection-time-to-live: 30 seconds
+        max-connections-per-route: 16
+      consumers:
+        example:
+          application-name: myApplication
+          consumer-group: myConsumerGroup
+          topics:
+          - SuperUpdateEvent
+          - AnotherUpdateEvent
+          stream-parameters:
+            batch-limit: 13
+      publishers:
+        - firstPublisher
+        - secondPublsher
+
+logging:
+  level:
+    root: INFO
