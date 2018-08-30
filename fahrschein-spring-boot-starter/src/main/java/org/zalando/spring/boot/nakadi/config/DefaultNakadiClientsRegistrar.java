@@ -43,6 +43,7 @@ public class DefaultNakadiClientsRegistrar implements NakadiClientsRegistrar {
             return genericBeanDefinition(NakadiClientFactory.class)
                 .addConstructorArgValue(buildAccessTokenProvider(client.getAccessTokenId()))
                 .addConstructorArgValue(client)
+                .addConstructorArgValue(id)
                 .setFactoryMethod("create");
 
         });

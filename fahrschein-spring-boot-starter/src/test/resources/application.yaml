@@ -1,16 +1,17 @@
 fahrschein:
   clients:
     first:
-      access-token-id: myAccessTokenId
-      request-config:
+      #access-token-id: myAccessTokenId
+      nakadi-uri: http://localhost
+      http-config:
         connect-timeout: 150 milliseconds
-      client-config:
         connection-time-to-live: 30 seconds
         max-connections-per-route: 16
       consumers:
         example:
           application-name: myApplication
           consumer-group: myConsumerGroup
+          read-from: end
           topics:
           - SuperUpdateEvent
           - AnotherUpdateEvent
