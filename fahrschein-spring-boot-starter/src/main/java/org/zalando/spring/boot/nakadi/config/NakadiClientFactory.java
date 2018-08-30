@@ -10,6 +10,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.zalando.fahrschein.AccessTokenProvider;
 import org.zalando.fahrschein.NakadiClient;
+import org.zalando.fahrschein.NakadiClientBuilder;
 import org.zalando.fahrschein.http.apache.HttpComponentsRequestFactory;
 import org.zalando.fahrschein.http.api.RequestFactory;
 import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.Client;
@@ -23,47 +24,54 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
-import lombok.experimental.UtilityClass;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-@UtilityClass
+@Slf4j
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
 class NakadiClientFactory {
 
-    public static NakadiClient create(AccessTokenProvider accessTokenProvider, Client client) {
-        return nakadiEmployeeRecordEventsClient(accessTokenProvider, client);
+    public static NakadiClient create(AccessTokenProvider accessTokenProvider, Client client, String clientId) {
+        return nakadiEmployeeRecordEventsClient(accessTokenProvider, client, clientId);
     }
 
-    protected static NakadiClient nakadiEmployeeRecordEventsClient(AccessTokenProvider accessTokenProvider, Client client) {
+    protected static NakadiClient nakadiEmployeeRecordEventsClient(AccessTokenProvider accessTokenProvider, Client client, String clientId) {
 
         final ObjectMapper objectMapper = buildObjectMapper();
 
-        final NakadiClient nakadiClient = NakadiClient.builder(URI.create(client.getNakadiUri()))
-                    .withRequestFactory(buildRequestFactory(client))
-                    .withAccessTokenProvider(accessTokenProvider)
-                    .withObjectMapper(objectMapper)
-                    .build();
+        NakadiClientBuilder ncb = NakadiClient.builder(URI.create(client.getNakadiUri()))
+                                            .withRequestFactory(buildRequestFactory(client))
+                                            .withObjectMapper(objectMapper);
 
-        return nakadiClient;
+                                            if (client.getAccessTokenId() != null) {
+                                                ncb = ncb.withAccessTokenProvider(accessTokenProvider);
+                                            } else {
+                                                log.info("NakadiClient: [{}] - No AccessTokenProvider configured. No 'accessTokenId' was set.", clientId);
+                                            }
+
+        return ncb.build();
     }
 
     protected static RequestFactory buildRequestFactory(Client client) {
         final RequestConfig config = RequestConfig.custom()
-                .setSocketTimeout((int) MILLISECONDS.convert(client.getRequestConfig().getSocketTimeout().getAmount(), client.getRequestConfig().getSocketTimeout().getUnit()))
-                .setConnectTimeout((int) MILLISECONDS.convert(client.getRequestConfig().getConnectTimeout().getAmount(), client.getRequestConfig().getConnectTimeout().getUnit()))
-                .setConnectionRequestTimeout((int) MILLISECONDS.convert(client.getRequestConfig().getConnectionRequestTimeout().getAmount(), client.getRequestConfig().getConnectionRequestTimeout().getUnit()))
+                .setSocketTimeout((int) MILLISECONDS.convert(client.getHttpConfig().getSocketTimeout().getAmount(), client.getHttpConfig().getSocketTimeout().getUnit()))
+                .setConnectTimeout((int) MILLISECONDS.convert(client.getHttpConfig().getConnectTimeout().getAmount(), client.getHttpConfig().getConnectTimeout().getUnit()))
+                .setConnectionRequestTimeout((int) MILLISECONDS.convert(client.getHttpConfig().getConnectionRequestTimeout().getAmount(), client.getHttpConfig().getConnectionRequestTimeout().getUnit()))
                 .build();
 
     final ConnectionConfig connectionConfig = ConnectionConfig.custom()
-                .setBufferSize(client.getConnectionConfig().getBufferSize())
+                .setBufferSize(client.getHttpConfig().getBufferSize())
                 .build();
 
     final CloseableHttpClient httpClient = HttpClients.custom()
                 .setDefaultRequestConfig(config)
                 .setDefaultConnectionConfig(connectionConfig)
-                .setConnectionTimeToLive(client.getClientConfig().getConnectionTimeToLive().getAmount(), client.getClientConfig().getConnectionTimeToLive().getUnit())
+                .setConnectionTimeToLive(client.getHttpConfig().getConnectionTimeToLive().getAmount(), client.getHttpConfig().getConnectionTimeToLive().getUnit())
                 .disableAutomaticRetries()
                 .disableRedirectHandling()
-                .setMaxConnTotal(client.getClientConfig().getMaxConnectionsTotal())
-                .setMaxConnPerRoute(client.getClientConfig().getMaxConnectionsPerRoute())
+                .setMaxConnTotal(client.getHttpConfig().getMaxConnectionsTotal())
+                .setMaxConnPerRoute(client.getHttpConfig().getMaxConnectionsPerRoute())
                 .build();
 
         return new HttpComponentsRequestFactory(httpClient);
