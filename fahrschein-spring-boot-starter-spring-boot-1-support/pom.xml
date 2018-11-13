@@ -19,7 +19,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
-            <version>1.5.15.RELEASE</version>
+            <version>1.5.17.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

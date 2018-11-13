@@ -1,10 +1,14 @@
 package org.zalando.spring.boot.nakadi.config;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.springframework.util.StringUtils.hasText;
 import static org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.Position.END;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.zalando.fahrschein.IORunnable;
 import org.zalando.fahrschein.Listener;
 import org.zalando.fahrschein.NakadiClient;
@@ -13,31 +17,43 @@ import org.zalando.fahrschein.SubscriptionBuilder;
 import org.zalando.fahrschein.domain.Subscription;
 import org.zalando.spring.boot.nakadi.NakadiConsumer;
 import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.Client.NakadiConsumerConfig;
+import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.Client.NakadiConsumerDefaults;
+import org.zalando.spring.boot.nakadi.events.NakadiSubscriptionEvent;
+import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.StreamParametersConfig;
 
-class DefaultNakadiConsumer implements NakadiConsumer {
+class DefaultNakadiConsumer implements NakadiConsumer, BeanNameAware, ApplicationEventPublisherAware {
 
     private final NakadiClient nakadiClient;
     private final NakadiConsumerConfig consumerConfig;
+    private final NakadiConsumerDefaults consumerDefaults;
 
-    DefaultNakadiConsumer(NakadiClient client, NakadiConsumerConfig consumerConfig) {
+    private String beanName;
+    private ApplicationEventPublisher eventPublisher;
+
+    DefaultNakadiConsumer(NakadiClient client, NakadiConsumerConfig consumerConfig, NakadiConsumerDefaults consumerDefaults) {
         this.nakadiClient = client;
         this.consumerConfig = consumerConfig;
+        this.consumerDefaults = consumerDefaults;
     }
 
     @Override
     public <Type> void listen(Class<Type> clazz, Listener<Type> listener) {
         try {
-            nakadiClient.stream(getSubscription())
-            .withStreamParameters(getStreamParameters())
+        	final Subscription sub = getSubscription();
+        	final StreamParameters streamParams = getStreamParameters();
+            nakadiClient.stream(sub)
+            .withStreamParameters(streamParams)
             .listen(clazz, listener);
+
+            this.eventPublisher.publishEvent(new NakadiSubscriptionEvent(this.beanName, sub, streamParams, clazz.getName(), listener.getClass().getName()));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
     private Subscription getSubscription() throws IOException {
-        SubscriptionBuilder sb = nakadiClient.subscription(consumerConfig.getApplicationName(), newHashSet(consumerConfig.getTopics()))
-                            .withConsumerGroup(consumerConfig.getConsumerGroup());
+        SubscriptionBuilder sb = nakadiClient.subscription(getApplicationName(), newHashSet(consumerConfig.getTopics()))
+                            .withConsumerGroup(getConsumerGroup());
 
         if (END.equals(consumerConfig.getReadFrom())) {
             sb = sb.readFromEnd();
@@ -48,31 +64,36 @@ class DefaultNakadiConsumer implements NakadiConsumer {
     }
 
     protected StreamParameters getStreamParameters() {
-        if (consumerConfig.getStreamParameters() == null) {
+        if (consumerConfig.getStreamParameters() == null && consumerDefaults.getStreamParameters() == null) {
             return new StreamParameters();
         } else {
+        	StreamParametersConfig config = consumerConfig.getStreamParameters();
+        	if(config == null) {
+        		config = consumerDefaults.getStreamParameters();
+        	}
+
             StreamParameters sp = new StreamParameters();
-            if (consumerConfig.getStreamParameters().getBatchFlushTimeout() != null) {
-                sp = sp.withBatchFlushTimeout((int) consumerConfig.getStreamParameters().getBatchFlushTimeout());
+            if (config.getBatchFlushTimeout() != null) {
+                sp = sp.withBatchFlushTimeout((int) config.getBatchFlushTimeout());
             }
 
-            if (consumerConfig.getStreamParameters().getBatchLimit() != null) {
-                sp = sp.withBatchLimit((int) consumerConfig.getStreamParameters().getBatchLimit());
+            if (config.getBatchLimit() != null) {
+                sp = sp.withBatchLimit((int) config.getBatchLimit());
             }
 
-            if (consumerConfig.getStreamParameters().getMaxUncommittedEvents() != null) {
-                sp = sp.withMaxUncommittedEvents((int) consumerConfig.getStreamParameters().getMaxUncommittedEvents());
+            if (config.getMaxUncommittedEvents() != null) {
+                sp = sp.withMaxUncommittedEvents((int) config.getMaxUncommittedEvents());
             }
 
-            if (consumerConfig.getStreamParameters().getStreamKeepAliveLimit() != null) {
-                sp = sp.withStreamKeepAliveLimit((int) consumerConfig.getStreamParameters().getStreamKeepAliveLimit());
+            if (config.getStreamKeepAliveLimit() != null) {
+                sp = sp.withStreamKeepAliveLimit((int) config.getStreamKeepAliveLimit());
             }
 
-            if (consumerConfig.getStreamParameters().getStreamLimit() != null) {
-                sp = sp.withStreamLimit((int) consumerConfig.getStreamParameters().getStreamLimit());
+            if (config.getStreamLimit() != null) {
+                sp = sp.withStreamLimit((int) config.getStreamLimit());
             }
-            if (consumerConfig.getStreamParameters().getStreamTimeout() != null) {
-                sp = sp.withStreamTimeout((int) consumerConfig.getStreamParameters().getStreamTimeout());
+            if (config.getStreamTimeout() != null) {
+                sp = sp.withStreamTimeout((int) config.getStreamTimeout());
             }
             return sp;
         }
@@ -80,8 +101,43 @@ class DefaultNakadiConsumer implements NakadiConsumer {
 
     @Override
     public <Type> IORunnable runnable(Class<Type> clazz, Listener<Type> listener) throws IOException {
-            return nakadiClient.stream(getSubscription())
-                    .withStreamParameters(getStreamParameters())
-                    .runnable(clazz, listener);
+    	final Subscription sub = getSubscription();
+    	final StreamParameters streamParams = getStreamParameters();
+    	final IORunnable result = nakadiClient.stream(sub)
+					                .withStreamParameters(streamParams)
+					                .runnable(clazz, listener);
+
+    	this.eventPublisher.publishEvent(new NakadiSubscriptionEvent(this.beanName, sub, streamParams, clazz.getName(), listener.getClass().getName()));
+    	return result;
     }
+
+    protected String getApplicationName() {
+    	return getValueOrDefaultElseThrow(consumerConfig.getApplicationName(), consumerDefaults.getApplicationName(), new RuntimeException("'applicationName' is required"));
+    }
+    
+    protected String getConsumerGroup() {
+    	return getValueOrDefaultElseThrow(consumerConfig.getConsumerGroup(), consumerDefaults.getConsumerGroup(), new RuntimeException("'consumerGroup' is required"));
+    }
+
+	protected String getValueOrDefaultElseThrow(String value, String defaultValue, RuntimeException t) {
+		if (hasText(value)) {
+			return value;
+		} else {
+			if (hasText(defaultValue)) {
+				return defaultValue;
+			} else {
+				throw t;
+			}
+		}
+	}
+
+	@Override
+	public void setBeanName(String name) {
+		this.beanName = name;
+	}
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+		this.eventPublisher = applicationEventPublisher;
+	}
 }

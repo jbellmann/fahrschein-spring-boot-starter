@@ -1,15 +1,33 @@
 package org.zalando.spring.boot.nakadi.config;
 
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.zalando.spring.boot.nakadi.events.LoggingSubscriptionEventListener;
 import org.zalando.stups.tokens.AccessTokens;
 
 @Configuration
+@AutoConfigureAfter(name = {
+        "org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration",
+        "org.zalando.logbook.spring.LogbookAutoConfiguration"
+})
 public class NakadiClientAutoConfiguration {
 
     @Bean
     public static NakadiClientsPostProcessor nakadiClientPostProcessor(AccessTokens accessTokens) {
         return new NakadiClientsPostProcessor(accessTokens);
+    }
+
+    @Configuration
+    @ConditionalOnProperty(prefix="fahrschein", name = {"logging-subscription-event-listener-enabled"}, havingValue="true", matchIfMissing = false)
+    public static class SubscriptionEventListenerConfig {
+
+    	@Bean
+    	public LoggingSubscriptionEventListener consoleNakadiSubscriptionEventListener(NakadiClientsProperties props) {
+    		return new LoggingSubscriptionEventListener(props.isLoggingSubscriptionEventListenerEnabled());
+    	}
+    	
     }
 
 }
