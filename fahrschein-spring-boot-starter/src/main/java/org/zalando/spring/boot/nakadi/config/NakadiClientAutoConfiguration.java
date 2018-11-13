@@ -19,15 +19,10 @@ public class NakadiClientAutoConfiguration {
         return new NakadiClientsPostProcessor(accessTokens);
     }
 
-    @Configuration
-    @ConditionalOnProperty(prefix="fahrschein", name = {"logging-subscription-event-listener-enabled"}, havingValue="true", matchIfMissing = false)
-    public static class SubscriptionEventListenerConfig {
-
-    	@Bean
-    	public LoggingSubscriptionEventListener consoleNakadiSubscriptionEventListener(NakadiClientsProperties props) {
-    		return new LoggingSubscriptionEventListener(props.isLoggingSubscriptionEventListenerEnabled());
-    	}
-    	
-    }
+	@Bean
+	@ConditionalOnProperty(prefix="fahrschein", name = {"logging-subscription-event-listener-enabled"}, havingValue="true", matchIfMissing = false)
+	public LoggingSubscriptionEventListener consoleNakadiSubscriptionEventListener(NakadiClientsProperties props) {
+		return new LoggingSubscriptionEventListener(props.isLoggingSubscriptionEventListenerEnabled());
+	}
 
 }
