@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.zalando.spring</groupId>
         <artifactId>fahrschein-spring-boot-starter-parent</artifactId>
-        <version>0.0.3-SNAPSHOT</version>
+        <version>0.0.6-SNAPSHOT</version>
     </parent>
     <artifactId>fahrschein-spring-boot-starter-config</artifactId>
 
@@ -27,6 +27,7 @@
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
         </dependency>
     </dependencies>
 </project>

@@ -25,6 +25,8 @@ public class NakadiClientsProperties {
 
     private Map<String, Client> clients = new LinkedHashMap<>();
 
+    private boolean loggingSubscriptionEventListenerEnabled = true;
+
     @Data
     public static final class Client {
 
@@ -32,6 +34,8 @@ public class NakadiClientsProperties {
 
         @NotBlank
         private String nakadiUri;
+
+        private NakadiConsumerDefaults defaults;
 
         private Map<String, NakadiConsumerConfig> consumers = new LinkedHashMap<>();
 
@@ -41,12 +45,24 @@ public class NakadiClientsProperties {
         private HttpConfigProperties httpConfig = new HttpConfigProperties();
 
         @Data
+        public static final class NakadiConsumerDefaults {
+
+        	private String applicationName;
+
+        	private String consumerGroup = "default";
+
+        	private Position readFrom = Position.END;
+
+        	@NestedConfigurationProperty
+        	private StreamParametersConfig streamParameters = new StreamParametersConfig();
+        }
+
+        @Data
         public static final class NakadiConsumerConfig {
 
-            @NotBlank
             private String applicationName;
 
-            private String consumerGroup = "default";
+            private String consumerGroup;
 
             private List<String> topics = new ArrayList<>();
 

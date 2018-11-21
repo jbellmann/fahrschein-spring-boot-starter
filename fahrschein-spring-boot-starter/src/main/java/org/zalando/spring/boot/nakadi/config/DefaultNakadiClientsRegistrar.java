@@ -11,6 +11,7 @@ import org.zalando.spring.boot.nakadi.NakadiConsumer;
 import org.zalando.spring.boot.nakadi.NakadiPublisher;
 import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.Client;
 import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.Client.NakadiConsumerConfig;
+import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.Client.NakadiConsumerDefaults;
 import org.zalando.stups.tokens.AccessTokens;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class DefaultNakadiClientsRegistrar implements NakadiClientsRegistrar {
         properties.getClients().forEach((clientId, client) -> {
             String registeredClientId = registerNakadiClient(clientId, client);
             client.getConsumers().forEach((consumerId, listener) -> {
-                registerConsumer(registeredClientId, consumerId, listener);
+                registerConsumer(registeredClientId, consumerId, listener, client.getDefaults());
             });
             client.getPublishers().stream().forEach(publisherId -> {
                 registerPublisher(registeredClientId, publisherId);
@@ -49,12 +50,13 @@ public class DefaultNakadiClientsRegistrar implements NakadiClientsRegistrar {
         });
     }
 
-    private String registerConsumer(final String nakadiClientId, final String listenerId, final NakadiConsumerConfig sub) {
+    private String registerConsumer(final String nakadiClientId, final String listenerId, final NakadiConsumerConfig consumerConfig, NakadiConsumerDefaults consumerDefaults) {
         return registry.registerIfAbsent(listenerId, NakadiConsumer.class, () -> {
             log.info("NakadiConsumer: [{}] registered with NakadiClient: [{}]", listenerId, nakadiClientId);
             return genericBeanDefinition(NakadiConsumerFactory.class)
                     .addConstructorArgReference(nakadiClientId)
-                    .addConstructorArgValue(sub)
+                    .addConstructorArgValue(consumerConfig)
+                    .addConstructorArgValue(consumerDefaults)
                     .setFactoryMethod("create");
         });
     }
