@@ -118,5 +118,11 @@ public class NakadiClientsProperties {
         private int maxConnectionsTotal = 16;
 
         private int maxConnectionsPerRoute = 6;
+
+        private boolean evictExpiredConnections = true;
+        
+        private boolean evictIdleConnections = true;
+        
+        private long maxIdleTime = 10_000;
     }
 }

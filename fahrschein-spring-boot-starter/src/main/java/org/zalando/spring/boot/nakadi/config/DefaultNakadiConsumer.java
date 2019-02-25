@@ -11,27 +11,27 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.zalando.fahrschein.IORunnable;
 import org.zalando.fahrschein.Listener;
-import org.zalando.fahrschein.NakadiClient;
 import org.zalando.fahrschein.StreamParameters;
 import org.zalando.fahrschein.SubscriptionBuilder;
 import org.zalando.fahrschein.domain.Subscription;
+import org.zalando.spring.boot.nakadi.CloseableNakadiClient;
 import org.zalando.spring.boot.nakadi.NakadiConsumer;
 import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.Client.NakadiConsumerConfig;
 import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.Client.NakadiConsumerDefaults;
-import org.zalando.spring.boot.nakadi.events.NakadiSubscriptionEvent;
 import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.StreamParametersConfig;
+import org.zalando.spring.boot.nakadi.events.NakadiSubscriptionEvent;
 
 class DefaultNakadiConsumer implements NakadiConsumer, BeanNameAware, ApplicationEventPublisherAware {
 
-    private final NakadiClient nakadiClient;
+	private final CloseableNakadiClient closeableNakadiClient;
     private final NakadiConsumerConfig consumerConfig;
     private final NakadiConsumerDefaults consumerDefaults;
 
     private String beanName;
     private ApplicationEventPublisher eventPublisher;
 
-    DefaultNakadiConsumer(NakadiClient client, NakadiConsumerConfig consumerConfig, NakadiConsumerDefaults consumerDefaults) {
-        this.nakadiClient = client;
+    DefaultNakadiConsumer(CloseableNakadiClient client, NakadiConsumerConfig consumerConfig, NakadiConsumerDefaults consumerDefaults) {
+        this.closeableNakadiClient = client;
         this.consumerConfig = consumerConfig;
         this.consumerDefaults = consumerDefaults;
     }
@@ -41,7 +41,7 @@ class DefaultNakadiConsumer implements NakadiConsumer, BeanNameAware, Applicatio
         try {
         	final Subscription sub = getSubscription();
         	final StreamParameters streamParams = getStreamParameters();
-            nakadiClient.stream(sub)
+            closeableNakadiClient.getDelegate().stream(sub)
             .withStreamParameters(streamParams)
             .listen(clazz, listener);
 
@@ -52,7 +52,7 @@ class DefaultNakadiConsumer implements NakadiConsumer, BeanNameAware, Applicatio
     }
 
     private Subscription getSubscription() throws IOException {
-        SubscriptionBuilder sb = nakadiClient.subscription(getApplicationName(), newHashSet(consumerConfig.getTopics()))
+        SubscriptionBuilder sb = closeableNakadiClient.getDelegate().subscription(getApplicationName(), newHashSet(consumerConfig.getTopics()))
                             .withConsumerGroup(getConsumerGroup());
 
         if (END.equals(consumerConfig.getReadFrom())) {
@@ -103,7 +103,7 @@ class DefaultNakadiConsumer implements NakadiConsumer, BeanNameAware, Applicatio
     public <Type> IORunnable runnable(Class<Type> clazz, Listener<Type> listener) throws IOException {
     	final Subscription sub = getSubscription();
     	final StreamParameters streamParams = getStreamParameters();
-    	final IORunnable result = nakadiClient.stream(sub)
+    	final IORunnable result = closeableNakadiClient.getDelegate().stream(sub)
 					                .withStreamParameters(streamParams)
 					                .runnable(clazz, listener);
 
