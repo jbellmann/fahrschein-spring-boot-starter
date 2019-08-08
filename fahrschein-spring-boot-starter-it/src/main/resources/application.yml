@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: example-app
+
+fahrschein:
+  clients:
+    first:
+#      nakadi-uri: ${NAKADI_URL}
+      http-config:
+        connect-timeout: 150 milliseconds
+        connection-time-to-live: 30 seconds
+        max-connections-per-route: 16
+      defaults:
+        application-name: stups_outfit-management-api
+        consumer-group: stups_outfit-management-api_local
+      consumers:
+        example:
+          application-name: stups_outfit-management-api
+          consumer-group: stups_outfit-management-api_local
+          read-from: begin
+          topics:
+          - outfit.outfit-update
+      publishers:
+        - outfitUpdatePublisher
+
+logging:
+  level:
+    com.github.dockerjava: INFO
+    org.apache.http: INFO

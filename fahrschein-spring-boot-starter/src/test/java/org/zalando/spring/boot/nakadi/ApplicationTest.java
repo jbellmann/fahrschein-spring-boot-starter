@@ -3,6 +3,7 @@ package org.zalando.spring.boot.nakadi;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+
+// https://github.com/zalando-nakadi/fahrschein#stopping-and-resuming-streams
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ApplicationTest {
@@ -28,8 +31,9 @@ public class ApplicationTest {
     private AbstractApplicationContext aac;
 
     @Test
-    public void contextLoads() {
+    public void contextLoads() throws InterruptedException {
     	Map<String,CloseableNakadiClient> clientBeans = aac.getBeansOfType(CloseableNakadiClient.class);
+    	TimeUnit.SECONDS.sleep(5);
     	assertThat(clientBeans).isNotNull();
     }
 }

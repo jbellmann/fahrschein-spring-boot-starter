@@ -45,7 +45,7 @@ class DefaultNakadiConsumer implements NakadiConsumer, BeanNameAware, Applicatio
             .withStreamParameters(streamParams)
             .listen(clazz, listener);
 
-            this.eventPublisher.publishEvent(new NakadiSubscriptionEvent(this.beanName, sub, streamParams, clazz.getName(), listener.getClass().getName()));
+//            this.eventPublisher.publishEvent(new NakadiSubscriptionEvent(this.beanName, sub, streamParams, clazz.getName(), listener.getClass().getName()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -107,7 +107,7 @@ class DefaultNakadiConsumer implements NakadiConsumer, BeanNameAware, Applicatio
 					                .withStreamParameters(streamParams)
 					                .runnable(clazz, listener);
 
-    	this.eventPublisher.publishEvent(new NakadiSubscriptionEvent(this.beanName, sub, streamParams, clazz.getName(), listener.getClass().getName()));
+//    	this.eventPublisher.publishEvent(new NakadiSubscriptionEvent(this.beanName, sub, streamParams, clazz.getName(), listener.getClass().getName()));
     	return result;
     }
 

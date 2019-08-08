@@ -2,11 +2,7 @@ package org.zalando.spring.boot.nakadi.config;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.config.RequestConfig;
@@ -14,7 +10,6 @@ import org.apache.http.config.ConnectionConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.springframework.beans.factory.DisposableBean;
 import org.zalando.fahrschein.AccessTokenProvider;
 import org.zalando.fahrschein.NakadiClient;
 import org.zalando.fahrschein.NakadiClientBuilder;
@@ -37,9 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
-class NakadiClientFactory implements Closeable, DisposableBean {
-	
-	private static final List<Closeable> closeables = new ArrayList<>();
+class NakadiClientFactory {
 
     public static CloseableNakadiClient create(AccessTokenProvider accessTokenProvider, Client client, String clientId) {
         return buildCloseableNakadiClient(accessTokenProvider, client, clientId);
@@ -105,20 +98,4 @@ class NakadiClientFactory implements Closeable, DisposableBean {
                     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return objectMapper;
     }
-
-	@Override
-	public void destroy() throws Exception {
-		close();
-	}
-
-	@Override
-	public void close() throws IOException {
-		closeables.forEach(cl -> {
-			try {
-				cl.close();
-			} catch (IOException e) {
-				log.warn("Unable to close closeable", e);
-			}
-		});
-	}
 }

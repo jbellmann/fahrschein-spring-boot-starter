@@ -25,8 +25,9 @@ public class StreamParametersConfigTest {
         spc.setStreamLimit(30);
         defaults.setStreamParameters(spc);
         DefaultNakadiConsumer consumer = new DefaultNakadiConsumer(null, config, defaults);
-        ((BeanNameAware)consumer).setBeanName("testing");
-        ((ApplicationEventPublisherAware)consumer).setApplicationEventPublisher(Mockito.mock(ApplicationEventPublisher.class));
+        ((BeanNameAware) consumer).setBeanName("testing");
+        ((ApplicationEventPublisherAware) consumer)
+                .setApplicationEventPublisher(Mockito.mock(ApplicationEventPublisher.class));
         StreamParameters streamParamters = consumer.getStreamParameters();
         assertThat(streamParamters.getBatchFlushTimeout()).isEmpty();
         assertThat(streamParamters.getBatchLimit()).isEqualTo(Optional.ofNullable(30));
@@ -46,8 +47,9 @@ public class StreamParametersConfigTest {
         spc.setStreamLimit(40);
         config.setStreamParameters(spc);
         DefaultNakadiConsumer consumer = new DefaultNakadiConsumer(null, config, defaults);
-        ((BeanNameAware)consumer).setBeanName("testing");
-        ((ApplicationEventPublisherAware)consumer).setApplicationEventPublisher(Mockito.mock(ApplicationEventPublisher.class));
+        ((BeanNameAware) consumer).setBeanName("testing");
+        ((ApplicationEventPublisherAware) consumer)
+                .setApplicationEventPublisher(Mockito.mock(ApplicationEventPublisher.class));
         StreamParameters streamParamters = consumer.getStreamParameters();
         assertThat(streamParamters.getBatchFlushTimeout()).isEmpty();
         assertThat(streamParamters.getBatchLimit()).isEqualTo(Optional.ofNullable(40));
