@@ -29,8 +29,10 @@ public class DefaultNakadiClientsRegistrar implements NakadiClientsRegistrar {
     public void register() {
         properties.getClients().forEach((clientId, client) -> {
             String registeredClientId = registerNakadiClient(clientId, client);
-            client.getConsumers().forEach((consumerId, listener) -> {
-                registerConsumer(registeredClientId, consumerId, listener, client.getDefaults());
+            client.getConsumers().forEach((consumerId, nakadiConsumerConfig) -> {
+                final String consumerIdentifier = registerConsumer(registeredClientId, consumerId, nakadiConsumerConfig, client.getDefaults());
+                final String nakadiListenerContainerId = registerNakadiListenerContainer(consumerIdentifier, consumerId, nakadiConsumerConfig);
+                log.info("Registered consumer : {} and listenerContainer : {}", consumerIdentifier, nakadiListenerContainerId);
             });
             client.getPublishers().stream().forEach(publisherId -> {
                 registerPublisher(registeredClientId, publisherId);
@@ -46,27 +48,34 @@ public class DefaultNakadiClientsRegistrar implements NakadiClientsRegistrar {
                 .addConstructorArgValue(client)
                 .addConstructorArgValue(id)
                 .setFactoryMethod("create");
-
         });
     }
 
     private String registerConsumer(final String nakadiClientId, final String listenerId, final NakadiConsumerConfig consumerConfig, NakadiConsumerDefaults consumerDefaults) {
         return registry.registerIfAbsent(listenerId, NakadiConsumer.class, () -> {
             log.info("NakadiConsumer: [{}] registered with NakadiClient: [{}]", listenerId, nakadiClientId);
-            return genericBeanDefinition(NakadiConsumerFactory.class)
+            return genericBeanDefinition(DefaultNakadiConsumer.class)
                     .addConstructorArgReference(nakadiClientId)
                     .addConstructorArgValue(consumerConfig)
-                    .addConstructorArgValue(consumerDefaults)
-                    .setFactoryMethod("create");
+                    .addConstructorArgValue(consumerDefaults);
+        });
+    }
+
+    private String registerNakadiListenerContainer(final String nakadiConsumerId, final String listenerPrefix, final NakadiConsumerConfig consumerConfig) {
+        return registry.registerIfAbsent(nakadiConsumerId + "ListenerContainer", NakadiListenerContainer.class, () -> {
+            log.info("NakadiListenerContainer: [{}] registered with NakadiConsumer: [{}]", nakadiConsumerId + "ListenerContainer",nakadiConsumerId);
+            return genericBeanDefinition(NakadiListenerContainer.class)
+                    .addConstructorArgReference(nakadiConsumerId)
+                    .addConstructorArgReference(listenerPrefix + "NakadiListener")
+                    .addPropertyValue("autoStartup", consumerConfig.isAutostartEnabled());
         });
     }
 
     private String registerPublisher(final String nakadiClientId, final String publisherId) {
         return registry.registerIfAbsent(publisherId, NakadiPublisher.class, () -> {
             log.info("NakadiPublisher: [{}] registered with NakadiClient: [{}]", publisherId, nakadiClientId);
-            return genericBeanDefinition(NakadiPublisherFactory.class)
-                    .addConstructorArgReference(nakadiClientId)
-                    .setFactoryMethod("create");
+            return genericBeanDefinition(DefaultNakadiPublisher.class)
+                    .addConstructorArgReference(nakadiClientId);
         });
     }
 

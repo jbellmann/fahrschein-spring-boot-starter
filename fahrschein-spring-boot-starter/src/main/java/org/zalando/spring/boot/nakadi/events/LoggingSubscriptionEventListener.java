@@ -9,14 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class LoggingSubscriptionEventListener {
-	
-	private final boolean enabled;
 
-	@EventListener
-	@Async
-	public void onNakadiSubscriptionEvent(NakadiSubscriptionEvent e) {
-		if(enabled) {
-			log.info(e.toString());
-		}
-	}
+    private final boolean enabled;
+
+    @Async
+    @EventListener
+    public void onNakadiSubscriptionEvent(NakadiSubscriptionEvent e) {
+        if (enabled) {
+            log.info(e.toString());
+        }
+    }
 }

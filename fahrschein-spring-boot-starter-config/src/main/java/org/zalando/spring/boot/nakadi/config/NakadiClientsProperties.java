@@ -47,18 +47,22 @@ public class NakadiClientsProperties {
         @Data
         public static final class NakadiConsumerDefaults {
 
-        	private String applicationName;
+            private boolean autostartEnabled = true;
 
-        	private String consumerGroup = "default";
+            private String applicationName;
 
-        	private Position readFrom = Position.END;
+            private String consumerGroup = "default";
 
-        	@NestedConfigurationProperty
-        	private StreamParametersConfig streamParameters = new StreamParametersConfig();
+            private Position readFrom = Position.END;
+
+            @NestedConfigurationProperty
+            private StreamParametersConfig streamParameters = new StreamParametersConfig();
         }
 
         @Data
         public static final class NakadiConsumerConfig {
+
+            private boolean autostartEnabled = true;
 
             private String applicationName;
 
@@ -120,9 +124,9 @@ public class NakadiClientsProperties {
         private int maxConnectionsPerRoute = 6;
 
         private boolean evictExpiredConnections = true;
-        
+
         private boolean evictIdleConnections = true;
-        
+
         private long maxIdleTime = 10_000;
     }
 }

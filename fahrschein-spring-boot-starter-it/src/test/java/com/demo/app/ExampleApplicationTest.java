@@ -11,10 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -120,11 +117,6 @@ public class ExampleApplicationTest {
         log.info("SLEEP 20 ...");
         TimeUnit.SECONDS.sleep(20);
         log.info("FETCH EVENTS ...");
-
-////        outfitUpdateConsumer.listen(OutfitUpdateEvent.class, new OutfitUpdateEventListener());
-////        TimeUnit.SECONDS.sleep(30);
-//        Runnable r = outfitUpdateConsumer.runnable(OutfitUpdateEvent.class, new OutfitUpdateEventListener()).unchecked();
-//        Future<?> f = Executors.newFixedThreadPool(2).submit(r);
 
         outfitUpdatePublisher.publish("outfit.outfit-update", Collections.singletonList(OutfitUpdateEvent.buildEvent(DataOperation.CREATE, OutfitId.builder().outfitId(15L).build(), UUID.randomUUID().toString())));
         outfitUpdatePublisher.publish("outfit.outfit-update", Collections.singletonList(OutfitUpdateEvent.buildEvent(DataOperation.CREATE, OutfitId.builder().outfitId(16L).build(), UUID.randomUUID().toString())));

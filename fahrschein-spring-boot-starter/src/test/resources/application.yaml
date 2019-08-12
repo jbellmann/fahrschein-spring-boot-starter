@@ -1,3 +1,7 @@
+spring:
+  application:
+    name: myApplication
+
 fahrschein:
   clients:
     first:
@@ -7,8 +11,11 @@ fahrschein:
         connect-timeout: 150 milliseconds
         connection-time-to-live: 30 seconds
         max-connections-per-route: 16
+      defaults:
+        applicationName: ${spring.application.name}
       consumers:
         example:
+          autostartEnabled: false
           application-name: myApplication
           consumer-group: myConsumerGroup
           read-from: end

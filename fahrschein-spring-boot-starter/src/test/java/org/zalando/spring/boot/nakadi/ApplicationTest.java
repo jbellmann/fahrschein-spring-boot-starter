@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
-
+import org.zalando.fahrschein.NakadiClient;
 
 // https://github.com/zalando-nakadi/fahrschein#stopping-and-resuming-streams
 @RunWith(SpringRunner.class)
@@ -26,14 +26,14 @@ public class ApplicationTest {
     @Autowired
     @Qualifier("firstPublisher")
     private NakadiPublisher publisher;
-    
+
     @Autowired
     private AbstractApplicationContext aac;
 
     @Test
     public void contextLoads() throws InterruptedException {
-    	Map<String,CloseableNakadiClient> clientBeans = aac.getBeansOfType(CloseableNakadiClient.class);
-    	TimeUnit.SECONDS.sleep(5);
-    	assertThat(clientBeans).isNotNull();
+        Map<String, NakadiClient> clientBeans = aac.getBeansOfType(NakadiClient.class);
+        TimeUnit.SECONDS.sleep(5);
+        assertThat(clientBeans).isNotNull();
     }
 }

@@ -14,7 +14,6 @@ import org.zalando.fahrschein.AccessTokenProvider;
 import org.zalando.fahrschein.NakadiClient;
 import org.zalando.fahrschein.NakadiClientBuilder;
 import org.zalando.fahrschein.http.apache.HttpComponentsRequestFactory;
-import org.zalando.spring.boot.nakadi.CloseableNakadiClient;
 import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.Client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -34,15 +33,14 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 class NakadiClientFactory {
 
-    public static CloseableNakadiClient create(AccessTokenProvider accessTokenProvider, Client client, String clientId) {
+    public static NakadiClient create(AccessTokenProvider accessTokenProvider, Client client, String clientId) {
         return buildCloseableNakadiClient(accessTokenProvider, client, clientId);
     }
 
-    protected static CloseableNakadiClient buildCloseableNakadiClient(AccessTokenProvider accessTokenProvider, Client client, String clientId) {
+    protected static NakadiClient buildCloseableNakadiClient(AccessTokenProvider accessTokenProvider, Client client, String clientId) {
 
         final ObjectMapper objectMapper = buildObjectMapper();
 
-        
         CloseableHttpClient closeableHttpClient = buildCloseableHttpClient(client);
         NakadiClientBuilder ncb = NakadiClient.builder(URI.create(client.getNakadiUri()))
                                             .withRequestFactory(new HttpComponentsRequestFactory(closeableHttpClient))
@@ -54,7 +52,7 @@ class NakadiClientFactory {
                                                 log.info("NakadiClient: [{}] - No AccessTokenProvider configured. No 'accessTokenId' was set.", clientId);
                                             }
 
-        return new DefaultCloseableNakadiClient(closeableHttpClient, ncb.build());
+        return ncb.build();
     }
 
     protected static CloseableHttpClient buildCloseableHttpClient(Client client) {
@@ -67,7 +65,7 @@ class NakadiClientFactory {
     final ConnectionConfig connectionConfig = ConnectionConfig.custom()
                 .setBufferSize(client.getHttpConfig().getBufferSize())
                 .build();
-    
+
     HttpClientBuilder builder = HttpClients.custom()
                 .setDefaultRequestConfig(config)
                 .setDefaultConnectionConfig(connectionConfig)

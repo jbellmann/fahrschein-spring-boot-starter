@@ -10,50 +10,36 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.zalando.fahrschein.IORunnable;
-import org.zalando.fahrschein.Listener;
+import org.zalando.fahrschein.NakadiClient;
 import org.zalando.fahrschein.StreamParameters;
 import org.zalando.fahrschein.SubscriptionBuilder;
 import org.zalando.fahrschein.domain.Subscription;
-import org.zalando.spring.boot.nakadi.CloseableNakadiClient;
 import org.zalando.spring.boot.nakadi.NakadiConsumer;
+import org.zalando.spring.boot.nakadi.NakadiListener;
 import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.Client.NakadiConsumerConfig;
 import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.Client.NakadiConsumerDefaults;
 import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.StreamParametersConfig;
-import org.zalando.spring.boot.nakadi.events.NakadiSubscriptionEvent;
 
 class DefaultNakadiConsumer implements NakadiConsumer, BeanNameAware, ApplicationEventPublisherAware {
 
-	private final CloseableNakadiClient closeableNakadiClient;
+    private final NakadiClient closeableNakadiClient;
     private final NakadiConsumerConfig consumerConfig;
     private final NakadiConsumerDefaults consumerDefaults;
 
     private String beanName;
     private ApplicationEventPublisher eventPublisher;
 
-    DefaultNakadiConsumer(CloseableNakadiClient client, NakadiConsumerConfig consumerConfig, NakadiConsumerDefaults consumerDefaults) {
+    DefaultNakadiConsumer(NakadiClient client, NakadiConsumerConfig consumerConfig,
+            NakadiConsumerDefaults consumerDefaults) {
         this.closeableNakadiClient = client;
         this.consumerConfig = consumerConfig;
         this.consumerDefaults = consumerDefaults;
     }
 
-    @Override
-    public <Type> void listen(Class<Type> clazz, Listener<Type> listener) {
-        try {
-        	final Subscription sub = getSubscription();
-        	final StreamParameters streamParams = getStreamParameters();
-            closeableNakadiClient.getDelegate().stream(sub)
-            .withStreamParameters(streamParams)
-            .listen(clazz, listener);
-
-//            this.eventPublisher.publishEvent(new NakadiSubscriptionEvent(this.beanName, sub, streamParams, clazz.getName(), listener.getClass().getName()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private Subscription getSubscription() throws IOException {
-        SubscriptionBuilder sb = closeableNakadiClient.getDelegate().subscription(getApplicationName(), newHashSet(consumerConfig.getTopics()))
-                            .withConsumerGroup(getConsumerGroup());
+        SubscriptionBuilder sb = closeableNakadiClient
+                .subscription(getApplicationName(), newHashSet(consumerConfig.getTopics()))
+                .withConsumerGroup(getConsumerGroup());
 
         if (END.equals(consumerConfig.getReadFrom())) {
             sb = sb.readFromEnd();
@@ -67,10 +53,10 @@ class DefaultNakadiConsumer implements NakadiConsumer, BeanNameAware, Applicatio
         if (consumerConfig.getStreamParameters() == null && consumerDefaults.getStreamParameters() == null) {
             return new StreamParameters();
         } else {
-        	StreamParametersConfig config = consumerConfig.getStreamParameters();
-        	if(config == null) {
-        		config = consumerDefaults.getStreamParameters();
-        	}
+            StreamParametersConfig config = consumerConfig.getStreamParameters();
+            if (config == null) {
+                config = consumerDefaults.getStreamParameters();
+            }
 
             StreamParameters sp = new StreamParameters();
             if (config.getBatchFlushTimeout() != null) {
@@ -100,44 +86,43 @@ class DefaultNakadiConsumer implements NakadiConsumer, BeanNameAware, Applicatio
     }
 
     @Override
-    public <Type> IORunnable runnable(Class<Type> clazz, Listener<Type> listener) throws IOException {
-    	final Subscription sub = getSubscription();
-    	final StreamParameters streamParams = getStreamParameters();
-    	final IORunnable result = closeableNakadiClient.getDelegate().stream(sub)
-					                .withStreamParameters(streamParams)
-					                .runnable(clazz, listener);
-
-//    	this.eventPublisher.publishEvent(new NakadiSubscriptionEvent(this.beanName, sub, streamParams, clazz.getName(), listener.getClass().getName()));
-    	return result;
+    public <Type> IORunnable runnable(NakadiListener<Type> listener) throws IOException {
+        final Subscription sub = getSubscription();
+        final StreamParameters streamParams = getStreamParameters();
+        final IORunnable result = closeableNakadiClient.stream(sub).withStreamParameters(streamParams)
+                .runnable(listener.getEventType(), listener);
+        return result;
     }
 
     protected String getApplicationName() {
-    	return getValueOrDefaultElseThrow(consumerConfig.getApplicationName(), consumerDefaults.getApplicationName(), new RuntimeException("'applicationName' is required"));
+        return getValueOrDefaultElseThrow(consumerConfig.getApplicationName(), consumerDefaults.getApplicationName(),
+                new RuntimeException("'applicationName' is required"));
     }
-    
+
     protected String getConsumerGroup() {
-    	return getValueOrDefaultElseThrow(consumerConfig.getConsumerGroup(), consumerDefaults.getConsumerGroup(), new RuntimeException("'consumerGroup' is required"));
+        return getValueOrDefaultElseThrow(consumerConfig.getConsumerGroup(), consumerDefaults.getConsumerGroup(),
+                new RuntimeException("'consumerGroup' is required"));
     }
 
-	protected String getValueOrDefaultElseThrow(String value, String defaultValue, RuntimeException t) {
-		if (hasText(value)) {
-			return value;
-		} else {
-			if (hasText(defaultValue)) {
-				return defaultValue;
-			} else {
-				throw t;
-			}
-		}
-	}
+    protected String getValueOrDefaultElseThrow(String value, String defaultValue, RuntimeException t) {
+        if (hasText(value)) {
+            return value;
+        } else {
+            if (hasText(defaultValue)) {
+                return defaultValue;
+            } else {
+                throw t;
+            }
+        }
+    }
 
-	@Override
-	public void setBeanName(String name) {
-		this.beanName = name;
-	}
+    @Override
+    public void setBeanName(String name) {
+        this.beanName = name;
+    }
 
-	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-		this.eventPublisher = applicationEventPublisher;
-	}
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.eventPublisher = applicationEventPublisher;
+    }
 }
