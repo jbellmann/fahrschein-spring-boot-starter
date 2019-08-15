@@ -2,8 +2,10 @@ package org.zalando.spring.boot.nakadi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,5 +37,10 @@ public class ApplicationTest {
         Map<String, NakadiClient> clientBeans = aac.getBeansOfType(NakadiClient.class);
         TimeUnit.SECONDS.sleep(5);
         assertThat(clientBeans).isNotNull();
+        
+        final Predicate<String> startsWith = name -> name.startsWith("example");
+        Arrays.asList(aac.getBeanDefinitionNames()).stream().filter(startsWith).forEach(n -> 
+            System.out.println(n)
+        );
     }
 }

@@ -31,6 +31,7 @@ public class CustomContainerTest {
             }
         });
         NakadiListenerContainer container = new NakadiListenerContainer(consumer, listener);
+        container.setBeanName("test_container");
         container.initialize();
         assertThat(container.isRunning()).isFalse();
         assertThat(container.isAutoStartup()).isTrue();

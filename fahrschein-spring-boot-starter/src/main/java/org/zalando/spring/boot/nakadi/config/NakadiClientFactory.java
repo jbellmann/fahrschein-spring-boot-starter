@@ -75,12 +75,12 @@ class NakadiClientFactory {
                 .setMaxConnTotal(client.getHttpConfig().getMaxConnectionsTotal())
                 .setMaxConnPerRoute(client.getHttpConfig().getMaxConnectionsPerRoute());
 
-                if(client.getHttpConfig().isEvictExpiredConnections()) {
-                	builder = builder.evictExpiredConnections();
+                if (client.getHttpConfig().isEvictExpiredConnections()) {
+                    builder = builder.evictExpiredConnections();
                 }
 
-                if(client.getHttpConfig().isEvictIdleConnections()) {
-                	builder = builder.evictIdleConnections(client.getHttpConfig().getMaxIdleTime(), TimeUnit.MILLISECONDS);
+                if (client.getHttpConfig().isEvictIdleConnections()) {
+                    builder = builder.evictIdleConnections(client.getHttpConfig().getMaxIdleTime(), TimeUnit.MILLISECONDS);
                 }
 
         return builder.build();

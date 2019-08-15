@@ -27,6 +27,9 @@ public class NakadiClientsProperties {
 
     private boolean loggingSubscriptionEventListenerEnabled = true;
 
+    @NestedConfigurationProperty
+    private FahrscheinGlobalConfig global = new FahrscheinGlobalConfig();
+
     @Data
     public static final class Client {
 
@@ -128,5 +131,10 @@ public class NakadiClientsProperties {
         private boolean evictIdleConnections = true;
 
         private long maxIdleTime = 10_000;
+    }
+
+    @Data
+    public static class FahrscheinGlobalConfig {
+        private boolean autostartEnabled = true;
     }
 }

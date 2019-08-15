@@ -25,8 +25,11 @@ public class NakadiClientsPostProcessor implements BeanDefinitionRegistryPostPro
 
     private NakadiClientsProperties properties;
 
+    private Environment environment;
+
     @Override
     public void setEnvironment(Environment environment) {
+        this.environment = environment;
         final Collection<SettingsParser> parsers = Lists.newArrayList(ServiceLoader.load(SettingsParser.class));
         this.properties = parse((ConfigurableEnvironment) environment, parsers);
     }
@@ -43,7 +46,7 @@ public class NakadiClientsPostProcessor implements BeanDefinitionRegistryPostPro
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-        final NakadiClientsRegistrar registrar = new DefaultNakadiClientsRegistrar(new Registry(registry), properties, accessTokens);
+        final NakadiClientsRegistrar registrar = new DefaultNakadiClientsRegistrar(new Registry(registry), properties, accessTokens, environment);
         registrar.register();
     }
 

@@ -4,6 +4,7 @@ import static org.springframework.beans.factory.support.BeanDefinitionBuilder.ge
 
 import java.io.IOException;
 
+import org.springframework.core.env.Environment;
 import org.zalando.fahrschein.AccessTokenProvider;
 import org.zalando.fahrschein.NakadiClient;
 import org.zalando.spring.boot.config.Registry;
@@ -24,6 +25,7 @@ public class DefaultNakadiClientsRegistrar implements NakadiClientsRegistrar {
     private final Registry registry;
     private final NakadiClientsProperties properties;
     private final AccessTokens accessTokens;
+    private final Environment environment;
 
     @Override
     public void register() {
@@ -62,12 +64,13 @@ public class DefaultNakadiClientsRegistrar implements NakadiClientsRegistrar {
     }
 
     private String registerNakadiListenerContainer(final String nakadiConsumerId, final String listenerPrefix, final NakadiConsumerConfig consumerConfig) {
-        return registry.registerIfAbsent(nakadiConsumerId + "ListenerContainer", NakadiListenerContainer.class, () -> {
-            log.info("NakadiListenerContainer: [{}] registered with NakadiConsumer: [{}]", nakadiConsumerId + "ListenerContainer",nakadiConsumerId);
+        return registry.registerIfAbsent(listenerPrefix, NakadiListenerContainer.class, () -> {
+            log.info("NakadiListenerContainer: [{}] registered with NakadiConsumer: [{}]", listenerPrefix + "NakadiListenerContainer", nakadiConsumerId);
             return genericBeanDefinition(NakadiListenerContainer.class)
                     .addConstructorArgReference(nakadiConsumerId)
                     .addConstructorArgReference(listenerPrefix + "NakadiListener")
-                    .addPropertyValue("autoStartup", consumerConfig.isAutostartEnabled());
+
+                    .addPropertyValue("autoStartup", this.properties.getGlobal().isAutostartEnabled() && consumerConfig.isAutostartEnabled());
         });
     }
 

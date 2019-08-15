@@ -6,12 +6,14 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.util.StreamUtils.copyToByteArray;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,6 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
@@ -65,6 +68,9 @@ public class ExampleApplicationTest {
     @Autowired
     @Qualifier("outfitUpdatePublisher")
     private NakadiPublisher outfitUpdatePublisher;
+
+    @Autowired
+    private AbstractApplicationContext aac;
 
     @BeforeAll
     public static void setup() throws IOException {
@@ -126,6 +132,11 @@ public class ExampleApplicationTest {
         log.info("WAIT MAX OF 60 SECONDS ...");
         TimeUnit.SECONDS.sleep(60);
         log.info("DONE");
+
+        final Predicate<String> startsWith = name -> name.startsWith("example");
+        Arrays.asList(aac.getBeanDefinitionNames()).stream().filter(startsWith).forEach(n -> 
+            System.out.println(n)
+        );
     }
 
     static class NakadiEnvironmentContainer extends DockerComposeContainer<NakadiEnvironmentContainer> {

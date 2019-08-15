@@ -22,7 +22,7 @@ import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.StreamParam
 
 class DefaultNakadiConsumer implements NakadiConsumer, BeanNameAware, ApplicationEventPublisherAware {
 
-    private final NakadiClient closeableNakadiClient;
+    private final NakadiClient nakadiClient;
     private final NakadiConsumerConfig consumerConfig;
     private final NakadiConsumerDefaults consumerDefaults;
 
@@ -31,13 +31,13 @@ class DefaultNakadiConsumer implements NakadiConsumer, BeanNameAware, Applicatio
 
     DefaultNakadiConsumer(NakadiClient client, NakadiConsumerConfig consumerConfig,
             NakadiConsumerDefaults consumerDefaults) {
-        this.closeableNakadiClient = client;
+        this.nakadiClient = client;
         this.consumerConfig = consumerConfig;
         this.consumerDefaults = consumerDefaults;
     }
 
     private Subscription getSubscription() throws IOException {
-        SubscriptionBuilder sb = closeableNakadiClient
+        SubscriptionBuilder sb = nakadiClient
                 .subscription(getApplicationName(), newHashSet(consumerConfig.getTopics()))
                 .withConsumerGroup(getConsumerGroup());
 
@@ -89,7 +89,7 @@ class DefaultNakadiConsumer implements NakadiConsumer, BeanNameAware, Applicatio
     public <Type> IORunnable runnable(NakadiListener<Type> listener) throws IOException {
         final Subscription sub = getSubscription();
         final StreamParameters streamParams = getStreamParameters();
-        final IORunnable result = closeableNakadiClient.stream(sub).withStreamParameters(streamParams)
+        final IORunnable result = nakadiClient.stream(sub).withStreamParameters(streamParams)
                 .runnable(listener.getEventType(), listener);
         return result;
     }
