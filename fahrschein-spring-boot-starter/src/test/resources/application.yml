@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: next-generation-fahrschein-config
+
+fahrschein:
+  defaults:
+    autostart-enabled: false #containers will not start, quick switch instead of doing it for every container
+    nakadi-url: https://nakadi-staging.aruha-test.zalan.do
+    application-name: an_application_name
+    consumer-group: an_consumer_group_name
+    read-from: END
+    stream-parameters:
+      batch-limit: 1
+      streamLimit: 1
+      batchFlushTimeout: 2
+      streamTimeout: 2
+      streamKeepAliveLimit: 2
+      maxUncommittedEvents: 2
+    oauth:
+      enabled: false
+      access-token-id: token_id #same token_id used for all consumers
+    http:
+      connect-timeout: 150 milliseconds
+      connection-time-to-live: 30 seconds
+      max-connections-per-route: 21
+  consumers:
+    example: #consumer-id
+      oauth:
+        enabled: true
+      http:
+        connect-timeout: 300 milliseconds
+      topics:
+      - first.first-update
+

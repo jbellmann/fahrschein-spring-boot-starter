@@ -16,10 +16,10 @@ public class SpringBoot1SettingsParser implements SettingsParser {
 
     @Override
     @SneakyThrows
-    public NakadiClientsProperties parse(ConfigurableEnvironment environment) {
+    public FahrscheinConfigProperties parse(ConfigurableEnvironment environment) {
 
-        final PropertiesConfigurationFactory<NakadiClientsProperties> factory =
-                new PropertiesConfigurationFactory<>(NakadiClientsProperties.class);
+        final PropertiesConfigurationFactory<FahrscheinConfigProperties> factory =
+                new PropertiesConfigurationFactory<>(FahrscheinConfigProperties.class);
 
         factory.setTargetName("fahrschein");
         factory.setPropertySources(environment.getPropertySources());

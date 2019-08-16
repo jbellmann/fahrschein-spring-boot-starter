@@ -1,8 +1,9 @@
-package org.zalando.spring.boot.nakadi;
+package org.zalando.spring.boot.nakadi.config;
 
 import java.io.IOException;
 
 import org.zalando.fahrschein.IORunnable;
+import org.zalando.spring.boot.nakadi.NakadiListener;
 
 public interface NakadiConsumer {
 

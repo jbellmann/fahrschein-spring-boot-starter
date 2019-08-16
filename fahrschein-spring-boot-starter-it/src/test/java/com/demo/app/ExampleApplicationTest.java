@@ -6,6 +6,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.util.StreamUtils.copyToByteArray;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,8 +37,8 @@ import org.springframework.web.client.RestTemplate;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.zalando.fahrschein.domain.DataOperation;
-import org.zalando.spring.boot.nakadi.NakadiConsumer;
 import org.zalando.spring.boot.nakadi.NakadiPublisher;
+import org.zalando.spring.boot.nakadi.config.NakadiConsumer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -66,8 +67,7 @@ public class ExampleApplicationTest {
     private NakadiConsumer outfitUpdateConsumer;
 
     @Autowired
-    @Qualifier("outfitUpdatePublisher")
-    private NakadiPublisher outfitUpdatePublisher;
+    private NakadiPublisher nakadiPublisher;
 
     @Autowired
     private AbstractApplicationContext aac;
@@ -75,7 +75,7 @@ public class ExampleApplicationTest {
     @BeforeAll
     public static void setup() throws IOException {
         nakadiEnv = new NakadiEnvironmentContainer()
-                .withExposedService(NAKADI, NAKADI_PORT, Wait.forHttp("/event-types").forStatusCode(200))
+                .withExposedService(NAKADI, NAKADI_PORT, Wait.forHttp("/event-types").forStatusCode(200).withStartupTimeout(Duration.ofSeconds(60)))
                 .withExposedService(NAKADI_UI, NAKADI_UI_PORT);
         nakadiEnv.start();
 
@@ -117,16 +117,16 @@ public class ExampleApplicationTest {
         assertThat(nakadiUrl).isNotBlank();
         System.out.println(nakadiUrl);
         assertThat(outfitUpdateConsumer).isNotNull();
-        assertThat(outfitUpdatePublisher).isNotNull();
+        assertThat(nakadiPublisher).isNotNull();
         log.info("PUBLISH AN EVENT ...");
-        outfitUpdatePublisher.publish("outfit.outfit-update", Collections.singletonList(OutfitUpdateEvent.buildEvent(DataOperation.CREATE, OutfitId.builder().outfitId(12L).build(), UUID.randomUUID().toString())));
+        nakadiPublisher.publish("outfit.outfit-update", Collections.singletonList(OutfitUpdateEvent.buildEvent(DataOperation.CREATE, OutfitId.builder().outfitId(12L).build(), UUID.randomUUID().toString())));
         log.info("SLEEP 20 ...");
         TimeUnit.SECONDS.sleep(20);
         log.info("FETCH EVENTS ...");
 
-        outfitUpdatePublisher.publish("outfit.outfit-update", Collections.singletonList(OutfitUpdateEvent.buildEvent(DataOperation.CREATE, OutfitId.builder().outfitId(15L).build(), UUID.randomUUID().toString())));
-        outfitUpdatePublisher.publish("outfit.outfit-update", Collections.singletonList(OutfitUpdateEvent.buildEvent(DataOperation.CREATE, OutfitId.builder().outfitId(16L).build(), UUID.randomUUID().toString())));
-        outfitUpdatePublisher.publish("outfit.outfit-update", Collections.singletonList(OutfitUpdateEvent.buildEvent(DataOperation.CREATE, OutfitId.builder().outfitId(17L).build(), UUID.randomUUID().toString())));
+        nakadiPublisher.publish("outfit.outfit-update", Collections.singletonList(OutfitUpdateEvent.buildEvent(DataOperation.CREATE, OutfitId.builder().outfitId(15L).build(), UUID.randomUUID().toString())));
+        nakadiPublisher.publish("outfit.outfit-update", Collections.singletonList(OutfitUpdateEvent.buildEvent(DataOperation.CREATE, OutfitId.builder().outfitId(16L).build(), UUID.randomUUID().toString())));
+        nakadiPublisher.publish("outfit.outfit-update", Collections.singletonList(OutfitUpdateEvent.buildEvent(DataOperation.CREATE, OutfitId.builder().outfitId(17L).build(), UUID.randomUUID().toString())));
 
 
         log.info("WAIT MAX OF 60 SECONDS ...");
@@ -150,7 +150,7 @@ public class ExampleApplicationTest {
         @Override
         public void initialize(ConfigurableApplicationContext applicationContext) {
             Map<String, Object> props = new HashMap<>();
-            props.put("fahrschein.clients.first.nakadi-uri", nakadiUrl);
+            props.put("fahrschein.defaults.nakadi-url", nakadiUrl);
             applicationContext.getEnvironment().getPropertySources()
                     .addFirst(new MapPropertySource("integrationTest", props));
         }

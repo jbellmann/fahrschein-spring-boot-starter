@@ -14,7 +14,6 @@ import org.zalando.fahrschein.AccessTokenProvider;
 import org.zalando.fahrschein.NakadiClient;
 import org.zalando.fahrschein.NakadiClientBuilder;
 import org.zalando.fahrschein.http.apache.HttpComponentsRequestFactory;
-import org.zalando.spring.boot.nakadi.config.NakadiClientsProperties.Client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -25,62 +24,54 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NoArgsConstructor(access=AccessLevel.PROTECTED)
-class NakadiClientFactory {
+public class FahrscheinNakadiClientFactory {
 
-    public static NakadiClient create(AccessTokenProvider accessTokenProvider, Client client, String clientId) {
-        return buildCloseableNakadiClient(accessTokenProvider, client, clientId);
-    }
-
-    protected static NakadiClient buildCloseableNakadiClient(AccessTokenProvider accessTokenProvider, Client client, String clientId) {
-
+    public static NakadiClient create(AccessTokenProvider accessTokenProvider, AbstractConfig config) {
         final ObjectMapper objectMapper = buildObjectMapper();
 
-        CloseableHttpClient closeableHttpClient = buildCloseableHttpClient(client);
-        NakadiClientBuilder ncb = NakadiClient.builder(URI.create(client.getNakadiUri()))
+        CloseableHttpClient closeableHttpClient = buildCloseableHttpClient(config.getHttp());
+        NakadiClientBuilder ncb = NakadiClient.builder(URI.create(config.getNakadiUrl()))
                                             .withRequestFactory(new HttpComponentsRequestFactory(closeableHttpClient))
                                             .withObjectMapper(objectMapper);
 
-                                            if (client.getAccessTokenId() != null) {
+                                            if (config.getOauth().getEnabled()) {
                                                 ncb = ncb.withAccessTokenProvider(accessTokenProvider);
                                             } else {
-                                                log.info("NakadiClient: [{}] - No AccessTokenProvider configured. No 'accessTokenId' was set.", clientId);
+                                                log.info("NakadiClient: [{}] - No AccessTokenProvider configured. No 'accessTokenId' was set.", config.getId());
                                             }
 
         return ncb.build();
     }
 
-    protected static CloseableHttpClient buildCloseableHttpClient(Client client) {
+    protected static CloseableHttpClient buildCloseableHttpClient(HttpConfig httpConfig) {
         final RequestConfig config = RequestConfig.custom()
-                .setSocketTimeout((int) MILLISECONDS.convert(client.getHttpConfig().getSocketTimeout().getAmount(), client.getHttpConfig().getSocketTimeout().getUnit()))
-                .setConnectTimeout((int) MILLISECONDS.convert(client.getHttpConfig().getConnectTimeout().getAmount(), client.getHttpConfig().getConnectTimeout().getUnit()))
-                .setConnectionRequestTimeout((int) MILLISECONDS.convert(client.getHttpConfig().getConnectionRequestTimeout().getAmount(), client.getHttpConfig().getConnectionRequestTimeout().getUnit()))
+                .setSocketTimeout((int) MILLISECONDS.convert(httpConfig.getSocketTimeout().getAmount(), httpConfig.getSocketTimeout().getUnit()))
+                .setConnectTimeout((int) MILLISECONDS.convert(httpConfig.getConnectTimeout().getAmount(), httpConfig.getConnectTimeout().getUnit()))
+                .setConnectionRequestTimeout((int) MILLISECONDS.convert(httpConfig.getConnectionRequestTimeout().getAmount(), httpConfig.getConnectionRequestTimeout().getUnit()))
                 .build();
 
     final ConnectionConfig connectionConfig = ConnectionConfig.custom()
-                .setBufferSize(client.getHttpConfig().getBufferSize())
+                .setBufferSize(httpConfig.getBufferSize())
                 .build();
 
     HttpClientBuilder builder = HttpClients.custom()
                 .setDefaultRequestConfig(config)
                 .setDefaultConnectionConfig(connectionConfig)
-                .setConnectionTimeToLive(client.getHttpConfig().getConnectionTimeToLive().getAmount(), client.getHttpConfig().getConnectionTimeToLive().getUnit())
+                .setConnectionTimeToLive(httpConfig.getConnectionTimeToLive().getAmount(), httpConfig.getConnectionTimeToLive().getUnit())
                 .disableAutomaticRetries()
                 .disableRedirectHandling()
-                .setMaxConnTotal(client.getHttpConfig().getMaxConnectionsTotal())
-                .setMaxConnPerRoute(client.getHttpConfig().getMaxConnectionsPerRoute());
+                .setMaxConnTotal(httpConfig.getMaxConnectionsTotal())
+                .setMaxConnPerRoute(httpConfig.getMaxConnectionsPerRoute());
 
-                if (client.getHttpConfig().isEvictExpiredConnections()) {
+                if (httpConfig.getEvictExpiredConnections()) {
                     builder = builder.evictExpiredConnections();
                 }
 
-                if (client.getHttpConfig().isEvictIdleConnections()) {
-                    builder = builder.evictIdleConnections(client.getHttpConfig().getMaxIdleTime(), TimeUnit.MILLISECONDS);
+                if (httpConfig.getEvictIdleConnections()) {
+                    builder = builder.evictIdleConnections(httpConfig.getMaxIdleTime().longValue(), TimeUnit.MILLISECONDS);
                 }
 
         return builder.build();
@@ -96,4 +87,5 @@ class NakadiClientFactory {
                     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return objectMapper;
     }
+
 }

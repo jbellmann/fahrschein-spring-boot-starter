@@ -16,12 +16,12 @@ public class SpringBoot2SettingsParser implements SettingsParser {
     }
 
     @Override
-    public NakadiClientsProperties parse(ConfigurableEnvironment environment) {
+    public FahrscheinConfigProperties parse(ConfigurableEnvironment environment) {
         final Iterable<ConfigurationPropertySource> sources = from(environment.getPropertySources());
         final Binder binder = new Binder(sources);
 
-        return binder.bind("fahrschein", NakadiClientsProperties.class)
-                        .orElseCreate(NakadiClientsProperties.class);
+        return binder.bind("fahrschein", FahrscheinConfigProperties.class)
+                        .orElseCreate(FahrscheinConfigProperties.class);
     }
 
 }

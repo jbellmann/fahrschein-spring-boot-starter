@@ -12,7 +12,6 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.zalando.spring.boot.config.Registry;
-import org.zalando.stups.tokens.AccessTokens;
 
 import com.google.common.collect.Lists;
 
@@ -21,10 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class NakadiClientsPostProcessor implements BeanDefinitionRegistryPostProcessor, EnvironmentAware {
 
-    private final AccessTokens accessTokens;
-
-    private NakadiClientsProperties properties;
-
+    private FahrscheinConfigProperties properties;
     private Environment environment;
 
     @Override
@@ -32,21 +28,23 @@ public class NakadiClientsPostProcessor implements BeanDefinitionRegistryPostPro
         this.environment = environment;
         final Collection<SettingsParser> parsers = Lists.newArrayList(ServiceLoader.load(SettingsParser.class));
         this.properties = parse((ConfigurableEnvironment) environment, parsers);
+        this.properties.postProcess();
+        System.out.println("GOT IT");
     }
 
     // visible for testing
-    NakadiClientsProperties parse(final ConfigurableEnvironment environment, final Collection<SettingsParser> parsers) {
+    FahrscheinConfigProperties parse(final ConfigurableEnvironment environment, final Collection<SettingsParser> parsers) {
         final SettingsParser parser = parsers.stream()
                 .filter(SettingsParser::isApplicable)
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("No applicable nakadi-clients settings parser available"));
 
-        return (NakadiClientsProperties) parser.parse(environment);
+        return (FahrscheinConfigProperties) parser.parse(environment);
     }
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-        final NakadiClientsRegistrar registrar = new DefaultNakadiClientsRegistrar(new Registry(registry), properties, accessTokens, environment);
+        final NakadiClientsRegistrar registrar = new FahrscheinRegistrar(new Registry(registry), properties, environment);
         registrar.register();
     }
 

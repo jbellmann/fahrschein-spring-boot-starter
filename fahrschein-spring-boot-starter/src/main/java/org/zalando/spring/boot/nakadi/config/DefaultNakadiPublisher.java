@@ -11,12 +11,12 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 class DefaultNakadiPublisher implements NakadiPublisher {
-    private final NakadiClient closeableNakadiClient;
+    private final NakadiClient nakadiClient;
 
     @Override
     public <Type> void publish(String eventName, List<Type> events) {
         try {
-            closeableNakadiClient.publish(eventName, events);
+            nakadiClient.publish(eventName, events);
         } catch (IOException e) {
             e.printStackTrace();
         }

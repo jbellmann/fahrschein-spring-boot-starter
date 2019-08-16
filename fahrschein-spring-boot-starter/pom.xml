@@ -13,18 +13,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.zalando.stups</groupId>
-            <artifactId>tokens</artifactId>
-            <version>0.12.1</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>jcl-over-slf4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>fahrschein</artifactId>
             <version>${fahrschein.version}</version>

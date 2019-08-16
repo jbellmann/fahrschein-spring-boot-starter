@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.zalando.fahrschein.IORunnable;
-import org.zalando.spring.boot.nakadi.NakadiConsumer;
 import org.zalando.spring.boot.nakadi.NakadiListener;
 import org.zalando.spring.boot.nakadi.config.NakadiListenerContainer;
 

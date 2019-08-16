@@ -6,6 +6,6 @@ public interface SettingsParser {
 
     boolean isApplicable();
 
-    NakadiClientsProperties parse(ConfigurableEnvironment environment);
+    FahrscheinConfigProperties parse(ConfigurableEnvironment environment);
 
 }

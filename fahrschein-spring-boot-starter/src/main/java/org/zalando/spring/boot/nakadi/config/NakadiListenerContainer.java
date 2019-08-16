@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.zalando.spring.boot.nakadi.NakadiConsumer;
 import org.zalando.spring.boot.nakadi.NakadiListener;
 
 import lombok.AccessLevel;
@@ -25,7 +24,7 @@ class NakadiListenerContainer implements SmartLifecycle, BeanNameAware {
 
     private AtomicReference<ScheduledFuture<?>> scheduledTaskReference = new AtomicReference<>();
 
-    private boolean autoStartup = true;
+    private Boolean autoStartup = true;
 
     private String beanName = "BEAN_NAME_NOT_SET";
 
