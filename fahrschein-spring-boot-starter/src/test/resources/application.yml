@@ -5,7 +5,7 @@ spring:
 fahrschein:
   defaults:
     autostart-enabled: false #containers will not start, quick switch instead of doing it for every container
-    nakadi-url: https://nakadi-staging.aruha-test.zalan.do
+    nakadi-url: https://example.nakadi.host.org
     application-name: an_application_name
     consumer-group: an_consumer_group_name
     read-from: END
