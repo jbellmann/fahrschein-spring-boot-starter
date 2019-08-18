@@ -1,6 +1,8 @@
 package org.zalando.spring.boot.nakadi.config;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.zalando.fahrschein.AuthorizationBuilder.authorization;
+import static org.zalando.fahrschein.domain.Authorization.AuthorizationAttribute.ANYONE;
 import static org.zalando.spring.boot.nakadi.config.Position.END;
 
 import java.io.IOException;
@@ -49,7 +51,11 @@ public class FahrscheinNakadiConsumer implements NakadiConsumer, BeanNameAware, 
     private Subscription getSubscription() throws IOException {
         SubscriptionBuilder sb = nakadiClient
                 .subscription(consumerConfig.getApplicationName(), newHashSet(consumerConfig.getTopics()))
-                .withConsumerGroup(consumerConfig.getConsumerGroup());
+                .withConsumerGroup(consumerConfig.getConsumerGroup())
+                .withAuthorization(authorization()
+                        .withReaders(ANYONE)
+                        .addAdmin("user", "me")
+                        .build());
 
         if (END.equals(consumerConfig.getReadFrom())) {
             sb = sb.readFromEnd();

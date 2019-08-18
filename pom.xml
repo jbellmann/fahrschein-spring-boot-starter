@@ -58,7 +58,7 @@
         <jackson.version>2.9.9</jackson.version>
         <problem.version>0.21.0</problem.version>
         <fauxpas.version>0.8.0</fauxpas.version>
-        <fahrschein.version>0.16.0</fahrschein.version>
+        <fahrschein.version>0.18.0</fahrschein.version>
 
         <!-- not imported via bom ? -->
         <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
