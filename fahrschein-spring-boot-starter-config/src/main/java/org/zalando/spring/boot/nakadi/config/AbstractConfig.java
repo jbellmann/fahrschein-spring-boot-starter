@@ -25,4 +25,7 @@ public abstract class AbstractConfig {
     @NestedConfigurationProperty
     protected HttpConfig http = HttpConfig.defaultHttpConfig();
 
+    @NestedConfigurationProperty
+    protected AuthorizationsConfig authorizations = new AuthorizationsConfig();
+
 }

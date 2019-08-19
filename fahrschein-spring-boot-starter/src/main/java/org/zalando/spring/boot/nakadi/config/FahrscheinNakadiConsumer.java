@@ -6,6 +6,8 @@ import static org.zalando.fahrschein.domain.Authorization.AuthorizationAttribute
 import static org.zalando.spring.boot.nakadi.config.Position.END;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.context.ApplicationEventPublisher;
@@ -50,12 +52,25 @@ public class FahrscheinNakadiConsumer implements NakadiConsumer, BeanNameAware, 
     }
 
     private Subscription getSubscription() throws IOException {
+
+        List<AuthorizationAttribute> adminAttributes = new LinkedList<>();
+        consumerConfig.getAuthorizations().getAdmins()
+                .forEach((key, value) -> adminAttributes.add(new AuthorizationAttribute(key, value)));
+
+        List<AuthorizationAttribute> readerAttributes = new LinkedList<>();
+        consumerConfig.getAuthorizations().getReaders()
+                .forEach((key, value) -> readerAttributes.add(new AuthorizationAttribute(key, value)));
+
+        if (consumerConfig.getAuthorizations().getAnyReader()) {
+            readerAttributes.add(AuthorizationAttribute.ANYONE);
+        }
+
         SubscriptionBuilder sb = nakadiClient
                 .subscription(consumerConfig.getApplicationName(), newHashSet(consumerConfig.getTopics()))
                 .withConsumerGroup(consumerConfig.getConsumerGroup())
                 .withAuthorization(authorization()
-                        .withReaders(ANYONE)
-                        .addAdmin("service", "stups_nakajima")
+                        .withAdmins(adminAttributes)
+                        .withReaders(readerAttributes)
                         .build());
 
         if (END.equals(consumerConfig.getReadFrom())) {

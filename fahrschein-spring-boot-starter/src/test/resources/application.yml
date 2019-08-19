@@ -9,6 +9,10 @@ fahrschein:
     application-name: an_application_name
     consumer-group: an_consumer_group_name
     read-from: END
+    authorizations:
+      anyReader: true
+      admins:
+        service: nakajima
     stream-parameters:
       batch-limit: 1
       streamLimit: 1
