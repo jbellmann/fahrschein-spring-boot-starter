@@ -14,6 +14,7 @@ import org.zalando.fahrschein.IORunnable;
 import org.zalando.fahrschein.NakadiClient;
 import org.zalando.fahrschein.StreamParameters;
 import org.zalando.fahrschein.SubscriptionBuilder;
+import org.zalando.fahrschein.domain.Authorization.AuthorizationAttribute;
 import org.zalando.fahrschein.domain.Subscription;
 import org.zalando.spring.boot.nakadi.NakadiListener;
 
@@ -54,7 +55,7 @@ public class FahrscheinNakadiConsumer implements NakadiConsumer, BeanNameAware, 
                 .withConsumerGroup(consumerConfig.getConsumerGroup())
                 .withAuthorization(authorization()
                         .withReaders(ANYONE)
-                        .addAdmin("user", "me")
+                        .addAdmin("service", "stups_nakajima")
                         .build());
 
         if (END.equals(consumerConfig.getReadFrom())) {
