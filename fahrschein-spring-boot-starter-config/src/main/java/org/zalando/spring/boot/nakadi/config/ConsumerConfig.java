@@ -28,8 +28,9 @@ class ConsumerConfig extends AbstractConfig {
             this.oauth.setAccessTokenIdIfNotConfigured(defaultConsumerConfig.getOauth().getAccessTokenId());
         }
 
-        // authorizations
         this.getAuthorizations().mergeFromDefaults(defaultConsumerConfig.getAuthorizations());
+
+        this.getStreamParameters().mergeFromDefaults(defaultConsumerConfig.getStreamParameters());
     }
 
 }
