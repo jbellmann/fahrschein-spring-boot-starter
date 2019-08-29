@@ -40,148 +40,19 @@
     </developers>
 
     <modules>
-        <module>common-config-spring-boot</module>
-        <module>fahrschein-spring-boot-starter-config</module>
-        <module>fahrschein-spring-boot-starter</module>
-        <module>fahrschein-spring-boot-starter-spring-boot-1-support</module>
-        <module>fahrschein-spring-boot-starter-spring-boot-2-support</module>
-        <module>fahrschein-spring-boot-starter-it</module>
+        <module>fahrschein-starter</module>
+        <module>fahrschein-starter-it-parent</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <slf4j.version>1.7.25</slf4j.version>
-        <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
-        <spring.version>5.1.9.RELEASE</spring.version>
-        <jackson.version>2.9.9</jackson.version>
-        <problem.version>0.21.0</problem.version>
-        <fauxpas.version>0.8.0</fauxpas.version>
-        <fahrschein.version>0.18.0</fahrschein.version>
 
         <!-- not imported via bom ? -->
         <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
         <git-commit-id-plugin.version>2.2.6</git-commit-id-plugin.version>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-
-            <!-- spring -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter</artifactId>
-                <version>${spring-boot.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>ch.qos.logback</groupId>
-                        <artifactId>logback-classic</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-jcl</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>${spring.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-jcl</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${spring.version}</version>
-                <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-jcl</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <!-- logging -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>jcl-over-slf4j</artifactId>
-                <version>${slf4j.version}</version>
-                <optional>true</optional>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-simple</artifactId>
-                <version>${slf4j.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <!-- testing: common -->
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.12</version>
-                <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.hamcrest</groupId>
-                        <artifactId>hamcrest-core</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-junit</artifactId>
-                <version>2.0.0.0</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hobsoft.hamcrest</groupId>
-                <artifactId>hamcrest-compose</artifactId>
-                <version>0.4.0</version>
-                <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.hamcrest</groupId>
-                        <artifactId>hamcrest-core</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>2.21.0</version>
-                <scope>test</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
 
     <build>
         <plugins>
@@ -255,28 +126,6 @@
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
                     </configuration>
                 </plugin>
-                <!--
-                <plugin>
-                    <groupId>org.basepom.maven</groupId>
-                    <artifactId>duplicate-finder-maven-plugin</artifactId>
-                    <version>1.3.0</version>
-                    <executions>
-                        <execution>
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                            <configuration>
-                                <failBuildInCaseOfDifferentContentConflict>true</failBuildInCaseOfDifferentContentConflict>
-                                <failBuildInCaseOfEqualContentConflict>false</failBuildInCaseOfEqualContentConflict>
-                                <ignoredResourcePatterns>
-                                    <ignoredResourcePattern>.*</ignoredResourcePattern>
-                                </ignoredResourcePatterns>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
@@ -311,7 +160,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.3</version>
+                    <version>0.8.4</version>
                     <executions>
                         <execution>
                             <id>prepare-agent</id>
@@ -325,33 +174,6 @@
                                 <goal>report</goal>
                             </goals>
                         </execution>
-                        <!--
-                        <execution>
-                            <id>check</id>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                            <configuration>
-                                <rules>
-                                    <rule>
-                                        <element>CLASS</element>
-                                        <limits>
-                                            <limit>
-                                                <counter>LINE</counter>
-                                                <value>COVEREDRATIO</value>
-                                                <minimum>1.0</minimum>
-                                            </limit>
-                                            <limit>
-                                                <counter>BRANCH</counter>
-                                                <value>COVEREDRATIO</value>
-                                                <minimum>1.0</minimum>
-                                            </limit>
-                                        </limits>
-                                    </rule>
-                                </rules>
-                            </configuration>
-                        </execution>
-                        -->
                     </executions>
                 </plugin>
                 <plugin>
@@ -384,10 +206,20 @@
 
     <profiles>
         <profile>
-            <id>spring4</id>
+            <id>spring-boot-2</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
-                <spring.version>4.3.20.RELEASE</spring.version>
-                <spring-boot.version>1.5.19.RELEASE</spring-boot.version>
+                <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
+                <javax-validation.version>2.0.1.Final</javax-validation.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>spring-boot-1</id>
+            <properties>
+                <spring-boot.version>1.5.22.RELEASE</spring-boot.version>
+                <javax-validation.version>1.1.0.Final</javax-validation.version>
             </properties>
         </profile>
         <profile>

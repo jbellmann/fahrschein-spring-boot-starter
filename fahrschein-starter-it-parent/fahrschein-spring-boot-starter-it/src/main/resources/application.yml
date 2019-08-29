@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: example-app
+
+management:
+  # Enable these only if you really need them.
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  metrics:
+    enable:
+      all: true
+
+fahrschein:
+  defaults:
+    application-name: stups_outfit-management-api
+    consumer-group: stups_outfit-management-api_local
+    record-metrics: true
+    backoff:
+      enabled: true
+  consumers:
+    example: #consumer-id
+      read-from: begin
+      topics:
+      - outfit.outfit-update
+#  publishers:
+#    - firstPublisher
+#    - secondPublisher
+
+logging:
+  level:
+    com.github.dockerjava: INFO
+    org.apache.http: INFO
+  pattern:
+    # We use a custom pattern here to include both X-Flow-ID
+    console: '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%X{X-Flow-ID}){faint} %clr(%5p) %clr(${PID: }){magenta} %clr(---){faint} %clr([%50.50t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx'

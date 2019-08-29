@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: example-app
+
+management:
+  port: 7979
+  # We don't want security here as we will not expose that port to the outside world anyway
+  security:
+    enabled: false
+  # Let's not disclose we're running on Spring :-)
+  add-application-context-header: true
+  metrics:
+    binders:
+      files:
+        enabled: true
+      jvm:
+        enabled: true
+      processor:
+        enabled: true
+      uptime:
+        enabled: true
+
+fahrschein:
+  defaults:
+    application-name: stups_outfit-management-api
+    consumer-group: stups_outfit-management-api_local
+    record-metrics: true
+    backoff:
+      enabled: true
+  consumers:
+    example: #consumer-id
+      read-from: begin
+      topics:
+      - outfit.outfit-update
+#  publishers:
+#    - firstPublisher
+#    - secondPublisher
+
+logging:
+  level:
+    com.github.dockerjava: WARN
+    org.apache.http: INFO
+  pattern:
+    # We use a custom pattern here to include both X-Flow-ID
+    console: '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%X{X-Flow-ID}){faint} %clr(%5p) %clr(${PID: }){magenta} %clr(---){faint} %clr([%50.50t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx'
