@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.zalando.spring</groupId>
         <artifactId>fahrschein-starter-project</artifactId>
-        <version>0.0.15</version>
+        <version>0.0.16-SNAPSHOT</version>
     </parent>
     <artifactId>fahrschein-spring-boot-starter-spring-boot-2-support</artifactId>
 
