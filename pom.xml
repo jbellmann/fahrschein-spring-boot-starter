@@ -40,8 +40,8 @@
     </developers>
 
     <modules>
-        <module>fahrschein-starter</module>
-        <module>fahrschein-starter-it-parent</module>
+        <module>fahrschein-starter-project</module>
+        <module>fahrschein-starter-tests</module>
     </modules>
 
     <properties>
@@ -205,23 +205,6 @@
     </distributionManagement>
 
     <profiles>
-        <profile>
-            <id>spring-boot-2</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
-                <javax-validation.version>2.0.1.Final</javax-validation.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>spring-boot-1</id>
-            <properties>
-                <spring-boot.version>1.5.22.RELEASE</spring-boot.version>
-                <javax-validation.version>1.1.0.Final</javax-validation.version>
-            </properties>
-        </profile>
         <profile>
             <id>release</id>
             <build>
