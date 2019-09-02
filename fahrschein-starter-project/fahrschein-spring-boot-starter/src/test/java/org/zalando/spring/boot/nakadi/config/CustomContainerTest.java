@@ -14,9 +14,12 @@ import org.zalando.spring.boot.nakadi.config.NakadiListenerContainer;
 public class CustomContainerTest {
 
     @Test
-    public void testCustomContainer() throws InterruptedException, IOException {
-        long sleep = 20;
+    public void testCustomContainer() throws Exception {
+        long sleep = 10;
         NakadiConsumer consumer = Mockito.mock(NakadiConsumer.class);
+        ConsumerConfig cc = new ConsumerConfig();
+        cc.setId("test_container");
+        Mockito.when(consumer.getConsumerConfig()).thenReturn(cc);
         NakadiListener<?> listener = Mockito.mock(NakadiListener.class);
         Mockito.when(consumer.runnable(listener)).thenReturn(new IORunnable() {
             
@@ -30,7 +33,7 @@ public class CustomContainerTest {
             }
         });
         NakadiListenerContainer container = new NakadiListenerContainer(consumer, listener);
-        container.setBeanName("test_container");
+        container.afterPropertiesSet();
         container.initialize();
         assertThat(container.isRunning()).isFalse();
         assertThat(container.isAutoStartup()).isTrue();

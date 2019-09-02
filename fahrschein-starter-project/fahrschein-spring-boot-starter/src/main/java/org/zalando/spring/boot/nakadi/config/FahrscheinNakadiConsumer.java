@@ -25,15 +25,24 @@ import org.zalando.spring.boot.nakadi.MeterRegistryAware;
 import org.zalando.spring.boot.nakadi.NakadiListener;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class FahrscheinNakadiConsumer implements NakadiConsumer, MeterRegistryAware {
 
+    @NonNull
     private final NakadiClient nakadiClient;
+
+    @NonNull
     private final ConsumerConfig consumerConfig;
 
     private MeterRegistry meterRegistry;
+
+    @Override
+    public ConsumerConfig getConsumerConfig() {
+        return this.consumerConfig;
+    }
 
     @Override
     public void setMeterRegistry(MeterRegistry meterRegistry) {

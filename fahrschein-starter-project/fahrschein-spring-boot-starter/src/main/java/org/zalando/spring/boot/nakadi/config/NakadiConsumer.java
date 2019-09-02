@@ -9,4 +9,6 @@ public interface NakadiConsumer {
 
     <Type> IORunnable runnable(NakadiListener<Type> listener) throws IOException;
 
+    ConsumerConfig getConsumerConfig();
+
 }

@@ -50,11 +50,9 @@ public class ApplicationTest {
         Map<String, NakadiClient> clientBeans = aac.getBeansOfType(NakadiClient.class);
         TimeUnit.SECONDS.sleep(5);
         assertThat(clientBeans).isNotNull();
-        
+
         final Predicate<String> startsWith = name -> name.startsWith("example");
-        Arrays.asList(aac.getBeanDefinitionNames()).stream().filter(startsWith).forEach(n -> 
-            System.out.println(n)
-        );
+        Arrays.asList(aac.getBeanDefinitionNames()).stream().filter(startsWith).forEach(n -> System.out.println(n));
     }
 
     @TestConfiguration

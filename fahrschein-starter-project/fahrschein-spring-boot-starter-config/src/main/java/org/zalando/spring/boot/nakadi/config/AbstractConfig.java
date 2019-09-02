@@ -35,4 +35,6 @@ public abstract class AbstractConfig {
     @NestedConfigurationProperty
     protected BackoffConfig backoff = BackoffConfig.defaultBackoffConfig();
 
+    protected ThreadConfig threads = new ThreadConfig();
+
 }

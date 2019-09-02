@@ -41,6 +41,8 @@ public class ConsumerConfig extends AbstractConfig {
         this.getAuthorizations().mergeFromDefaults(defaultConsumerConfig.getAuthorizations());
 
         this.getStreamParameters().mergeFromDefaults(defaultConsumerConfig.getStreamParameters());
+
+        this.getThreads().setListenerPoolSize(Math.max(this.getThreads().getListenerPoolSize(), defaultConsumerConfig.getThreads().getListenerPoolSize()));
     }
 
 }
