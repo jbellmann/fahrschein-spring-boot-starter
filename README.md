@@ -75,7 +75,7 @@ Clients are identified by a *Client ID*, for instance `example` in the sample ab
 For a complete overview of available properties, they type and default value please refer to the following table:
 
 |Configuration                                |Data type            |Default / Comment                          |
-|:------------------------------------------- |:--------------------|:------------------------------------------|
+|-------------------------------------------- |---------------------|-------------------------------------------|
 |`fahrschein`                                 |                     |                                           |
 |`├── defaults`                               |                     |                                           |
 |`│   ├── nakadi-url`                         |`String`             |none                                       |
