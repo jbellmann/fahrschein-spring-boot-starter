@@ -106,7 +106,7 @@ For a complete overview of available properties, they type and default value ple
 |`│   │   ├── backoff-factor`                 |`double`             |`1.5`                                      |
 |`│   │   ├── max-retries`                    |`int`                |`1`                                        |
 |`│   │   └── jitter`                         |                     |                                           |
-|`│   │       |── enabled`                    |`boolean`            |`false`                                    |
+|`│   │       ├── enabled`                    |`boolean`            |`false`                                    |
 |`│   │       └── type`                       |`JitterType`         |`equal` (`full`)                           |
 |`│   ├── threads`                            |                     |                                           |
 |`│   │   └── listener-pool-size`             |`int`                |`1`                                        |
@@ -114,11 +114,11 @@ For a complete overview of available properties, they type and default value ple
 |`│   │   ├── enabled`                        |`boolean`            |`false`                                    |
 |`│   │   └── access-token-id`                |`String`             |none                                       |
 |`│   └── stream-parameters`                  |                                                                 |
-|`│      ├── batch-limit`                     |`int`                |none                                       |
-|`│      ├── stream-limit`                    |`int`                |none                                       |
-|`│      ├── batch-flush-timeout`             |`int`                |none                                       |
-|`│      ├── stream-timeout`                  |`int`                |none                                       |
-|`│      └── max-uncommitted-events`          |`int`                |none                                       |
+|`│       ├── batch-limit`                    |`int`                |none                                       |
+|`│       ├── stream-limit`                   |`int`                |none                                       |
+|`│       ├── batch-flush-timeout`            |`int`                |none                                       |
+|`│       ├── stream-timeout`                 |`int`                |none                                       |
+|`│       └── max-uncommitted-events`         |`int`                |none                                       |
 |`│`                                          |                     |                                           |
 |`└── consumers`                              |                     |                                           |
 |`    └── <id>`                               |`String`             |                                           |
@@ -151,7 +151,7 @@ For a complete overview of available properties, they type and default value ple
 |`        │   ├── backoff-factor`             |`double`             |`1.5`                                      |
 |`        │   ├── max-retries`                |`int`                |`1`                                        |
 |`        │   └── jitter`                     |                     |                                           |
-|`        │       |── enabled`                |`boolean`            |`false`                                    |
+|`        │       ├── enabled`                |`boolean`            |`false`                                    |
 |`        │       └── type`                   |`JitterType`         |`equal` (`full`)                           |
 |`        ├── threads`                        |                     |                                           |
 |`        │   └── listener-pool-size`         |`int`                |`1`                                        |
