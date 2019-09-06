@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.zalando.fahrschein.IORunnable;
 import org.zalando.spring.boot.nakadi.NakadiListener;
 
-public interface NakadiConsumer {
+interface NakadiConsumer {
 
     <Type> IORunnable runnable(NakadiListener<Type> listener) throws IOException;
 
