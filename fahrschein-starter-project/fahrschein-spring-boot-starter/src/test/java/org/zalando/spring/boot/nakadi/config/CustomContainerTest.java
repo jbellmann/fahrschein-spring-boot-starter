@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.zalando.fahrschein.IORunnable;
 import org.zalando.spring.boot.nakadi.NakadiListener;
 import org.zalando.spring.boot.nakadi.config.NakadiListenerContainer;
+import org.zalando.spring.boot.nakadi.config.properties.ConsumerConfig;
 
 public class CustomContainerTest {
 

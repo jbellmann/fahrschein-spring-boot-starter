@@ -1,7 +1,7 @@
-package org.zalando.spring.boot.nakadi.config;
+package org.zalando.spring.boot.nakadi.config.properties;
 
 import static java.util.Optional.ofNullable;
-import static org.zalando.spring.boot.nakadi.config.Merger.merge;
+import static org.zalando.spring.boot.nakadi.config.properties.Merger.merge;
 
 import java.util.ArrayList;
 import java.util.List;

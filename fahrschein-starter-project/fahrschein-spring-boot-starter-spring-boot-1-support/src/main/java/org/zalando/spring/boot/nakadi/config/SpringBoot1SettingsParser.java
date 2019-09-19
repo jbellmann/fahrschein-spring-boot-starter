@@ -3,6 +3,8 @@ package org.zalando.spring.boot.nakadi.config;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.ClassUtils;
+import org.zalando.spring.boot.nakadi.config.properties.FahrscheinConfigProperties;
+import org.zalando.spring.boot.nakadi.config.properties.SettingsParser;
 
 import lombok.SneakyThrows;
 

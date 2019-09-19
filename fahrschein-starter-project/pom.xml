@@ -17,7 +17,6 @@
     </properties>
 
     <modules>
-        <module>common-config-spring-boot</module>
         <module>fahrschein-spring-boot-starter-config</module>
         <module>fahrschein-spring-boot-starter</module>
         <module>fahrschein-spring-boot-starter-spring-boot-1-support</module>

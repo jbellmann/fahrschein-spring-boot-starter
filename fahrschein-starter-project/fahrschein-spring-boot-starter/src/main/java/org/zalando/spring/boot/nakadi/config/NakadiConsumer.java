@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.zalando.fahrschein.IORunnable;
 import org.zalando.spring.boot.nakadi.NakadiListener;
+import org.zalando.spring.boot.nakadi.config.properties.ConsumerConfig;
 
 interface NakadiConsumer {
 

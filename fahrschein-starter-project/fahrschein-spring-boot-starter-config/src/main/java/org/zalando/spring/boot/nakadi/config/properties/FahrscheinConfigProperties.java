@@ -1,4 +1,4 @@
-package org.zalando.spring.boot.nakadi.config;
+package org.zalando.spring.boot.nakadi.config.properties;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ public class FahrscheinConfigProperties {
 
     private PublisherConfig publisher = new PublisherConfig();
 
-    void postProcess() {
+    public void postProcess() {
         consumers.entrySet().forEach(e -> {
             e.getValue().mergeWithDefaultConfig(defaults);
             e.getValue().setId(e.getKey());

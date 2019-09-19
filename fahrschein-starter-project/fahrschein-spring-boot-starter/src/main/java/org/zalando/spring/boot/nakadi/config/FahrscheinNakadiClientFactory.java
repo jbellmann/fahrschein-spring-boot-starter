@@ -7,6 +7,7 @@ import org.zalando.fahrschein.CursorManager;
 import org.zalando.fahrschein.NakadiClient;
 import org.zalando.fahrschein.NakadiClientBuilder;
 import org.zalando.fahrschein.http.api.RequestFactory;
+import org.zalando.spring.boot.nakadi.config.properties.AbstractConfig;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

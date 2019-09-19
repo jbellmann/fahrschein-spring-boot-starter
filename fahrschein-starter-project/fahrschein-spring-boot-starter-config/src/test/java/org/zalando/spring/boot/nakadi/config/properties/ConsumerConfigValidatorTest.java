@@ -1,9 +1,11 @@
-package org.zalando.spring.boot.nakadi.config;
+package org.zalando.spring.boot.nakadi.config.properties;
 
 import org.junit.Test;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
+import org.zalando.spring.boot.nakadi.config.properties.ConsumerConfig;
+import org.zalando.spring.boot.nakadi.config.properties.ConsumerConfigValidator;
 
 public class ConsumerConfigValidatorTest {
 

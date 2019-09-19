@@ -2,7 +2,7 @@ package org.zalando.spring.boot.nakadi.config;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static org.zalando.fahrschein.AuthorizationBuilder.authorization;
-import static org.zalando.spring.boot.nakadi.config.Position.END;
+import static org.zalando.spring.boot.nakadi.config.properties.Position.END;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -23,6 +23,10 @@ import org.zalando.fahrschein.domain.Authorization.AuthorizationAttribute;
 import org.zalando.fahrschein.domain.Subscription;
 import org.zalando.spring.boot.nakadi.MeterRegistryAware;
 import org.zalando.spring.boot.nakadi.NakadiListener;
+import org.zalando.spring.boot.nakadi.config.properties.BackoffConfig;
+import org.zalando.spring.boot.nakadi.config.properties.ConsumerConfig;
+import org.zalando.spring.boot.nakadi.config.properties.JitterType;
+import org.zalando.spring.boot.nakadi.config.properties.StreamParametersConfig;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.NonNull;

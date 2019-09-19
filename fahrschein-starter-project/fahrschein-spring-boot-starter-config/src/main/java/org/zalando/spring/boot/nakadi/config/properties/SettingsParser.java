@@ -1,4 +1,4 @@
-package org.zalando.spring.boot.nakadi.config;
+package org.zalando.spring.boot.nakadi.config.properties;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 

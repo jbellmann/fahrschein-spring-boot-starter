@@ -11,6 +11,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.zalando.fahrschein.http.apache.HttpComponentsRequestFactory;
 import org.zalando.fahrschein.http.api.RequestFactory;
+import org.zalando.spring.boot.nakadi.config.properties.AbstractConfig;
+import org.zalando.spring.boot.nakadi.config.properties.HttpConfig;
 
 class RequestFactoryFactory {
 

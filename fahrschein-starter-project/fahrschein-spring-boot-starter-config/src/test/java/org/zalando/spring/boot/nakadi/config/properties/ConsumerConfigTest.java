@@ -1,8 +1,13 @@
-package org.zalando.spring.boot.nakadi.config;
+package org.zalando.spring.boot.nakadi.config.properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
+import org.zalando.spring.boot.nakadi.config.properties.AuthorizationsConfig;
+import org.zalando.spring.boot.nakadi.config.properties.ConsumerConfig;
+import org.zalando.spring.boot.nakadi.config.properties.DefaultConsumerConfig;
+import org.zalando.spring.boot.nakadi.config.properties.OAuthConfig;
+import org.zalando.spring.boot.nakadi.config.properties.StreamParametersConfig;
 
 public class ConsumerConfigTest {
 

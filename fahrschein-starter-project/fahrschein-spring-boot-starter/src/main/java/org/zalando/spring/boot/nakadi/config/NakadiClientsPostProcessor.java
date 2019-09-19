@@ -12,6 +12,8 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.zalando.spring.boot.config.Registry;
+import org.zalando.spring.boot.nakadi.config.properties.FahrscheinConfigProperties;
+import org.zalando.spring.boot.nakadi.config.properties.SettingsParser;
 
 import com.google.common.collect.Lists;
 

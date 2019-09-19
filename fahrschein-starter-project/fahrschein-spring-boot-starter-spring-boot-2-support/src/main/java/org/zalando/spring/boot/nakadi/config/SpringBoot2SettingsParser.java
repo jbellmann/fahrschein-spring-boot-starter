@@ -6,6 +6,8 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.ClassUtils;
+import org.zalando.spring.boot.nakadi.config.properties.FahrscheinConfigProperties;
+import org.zalando.spring.boot.nakadi.config.properties.SettingsParser;
 
 public class SpringBoot2SettingsParser implements SettingsParser {
 

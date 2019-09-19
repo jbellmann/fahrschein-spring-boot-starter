@@ -19,7 +19,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.zalando.fahrschein.AccessTokenProvider;
 import org.zalando.fahrschein.NakadiClient;
-import org.zalando.spring.boot.nakadi.config.PublisherConfig;
+import org.zalando.spring.boot.nakadi.config.properties.PublisherConfig;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
